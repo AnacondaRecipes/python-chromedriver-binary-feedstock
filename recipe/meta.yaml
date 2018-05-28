@@ -2,9 +2,9 @@
 {% set version = "2.38.0" %}
 {% set chromium_version = "2.38" %}
 {% set sha256 = "1fdfbabd01ebbb4089c4b691904191cdce0415b858f509e255fb39a7ed24b42d" %}
-{% set chromium_win32_sha256 = "1fdfbabd01ebbb4089c4b691904191cdce0415b858f509e255fb39a7ed24b42d" %}    # [win64]
+{% set chromium_win32_sha256 = "a8fa028acebef7b931ef9cb093f02865f9f7495e49351f556e919f7be77f072e" %}    # [win]
 {% set chromium_mac64_sha256 = "6da3e8e3604d332b73f961495cb6d01d79d995b456778a3bda87df236c138462" %}    # [osx]
-{% set chromium_linux64_sha256 = "1fdfbabd01ebbb4089c4b691904191cdce0415b858f509e255fb39a7ed24b42d" %}  # [linux64]
+{% set chromium_linux64_sha256 = "519e8f69824ab63d3f223edd19f92128007f78bfb51f878ca2a2d70c6a0f294e" %}  # [linux64]
 
 package:
   name: {{ name|lower }}-suite
@@ -14,16 +14,17 @@ source:
   - url: https://github.com/danielkaiser/{{ name }}/archive/v{{ version }}.tar.gz
     fn: {{ name }}-{{ version }}.tar.gz
     sha256: {{ sha256 }}
-  - url: https://chromedriver.storage.googleapis.com/{{ chromium_version }}/chromedriver_win32.zip    # [win32]
+  - url: https://chromedriver.storage.googleapis.com/{{ chromium_version }}/chromedriver_win32.zip    # [win]
   - url: https://chromedriver.storage.googleapis.com/{{ chromium_version }}/chromedriver_mac64.zip    # [osx]
   - url: https://chromedriver.storage.googleapis.com/{{ chromium_version }}/chromedriver_linux64.zip  # [linux64]
-    sha256: {{ chromium_win32_sha256 }}  # [win32]
+    sha256: {{ chromium_win32_sha256 }}  # [win]
     sha256: {{ chromium_mac64_sha256 }}  # [osx]
-    sha256: {{ chromium_linux64_sha256 }}  # [linux64]
+    sha256: {{ chromium_linux64_sha256 }}  # [linux]
     folder: chromedriver
 
 build:
   number: 0
+  skip: True  # [linux32 or ppc64le]
 
 outputs:
   - name: chromedriver-binary
@@ -32,15 +33,28 @@ outputs:
     # Ah the joy of binaries:
     build:
       missing_dso_whitelist:
-        - /usr/lib/libbsm.0.dylib
-        - /usr/lib/libresolv.9.dylib
+        - /usr/lib/libbsm.0.dylib     # [osx]
+        - /usr/lib/libresolv.9.dylib  # [osx]
         # We use install_name_tool on this one instead:
-        # - /usr/lib/libc++.1.dylib
+        # - /usr/lib/libc++.1.dylib   # [osx]
+        # Could probably use cdt packages here which would allow more options latre
+        # (o.e. recommendations for the things to install w/ system package manager).
+        - libglib-2.0.so.0            # [linux]
+        - libgcc_s.so.1               # [linux]
+        - libnspr4.so                 # [linux]
+        - libnss3.so                  # [linux]
+        - libpthread.so.0             # [linux]
+        - libdl.so.2                  # [linux]
+        - librt.so.1                  # [linux]
+        - libnssutil3.so              # [linux]
+        - libc.so.6                   # [linux]
+        - libm.so.6                   # [linux]
+        - libX11.so.6                 # [linux]
     requirements:
       build:
-        - cctools  # [osx]
+        - cctools                     # [osx]
       run:
-        - libcxx >=4.0.1  # [osx]
+        - libcxx >=4.0.1              # [osx]
 
   - name: python-chromedriver-binary
     version: {{ version }}
