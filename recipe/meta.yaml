@@ -1,46 +1,94 @@
 {% set name = "python-chromedriver-binary" %}
 {% set version = "2.38.0" %}
+{% set chromium_version = "2.38" %}
 {% set sha256 = "1fdfbabd01ebbb4089c4b691904191cdce0415b858f509e255fb39a7ed24b42d" %}
+{% set chromium_win32_sha256 = "1fdfbabd01ebbb4089c4b691904191cdce0415b858f509e255fb39a7ed24b42d" %}    # [win64]
+{% set chromium_mac64_sha256 = "6da3e8e3604d332b73f961495cb6d01d79d995b456778a3bda87df236c138462" %}    # [osx]
+{% set chromium_linux64_sha256 = "1fdfbabd01ebbb4089c4b691904191cdce0415b858f509e255fb39a7ed24b42d" %}  # [linux64]
 
 package:
-  name: {{ name|lower }}
+  name: {{ name|lower }}-suite
   version: {{ version }}
 
 source:
-  fn: {{ name }}-{{ version }}.tar.gz
-  url: https://github.com/danielkaiser/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  - url: https://github.com/danielkaiser/{{ name }}/archive/v{{ version }}.tar.gz
+    fn: {{ name }}-{{ version }}.tar.gz
+    sha256: {{ sha256 }}
+  - url: https://chromedriver.storage.googleapis.com/{{ chromium_version }}/chromedriver_win32.zip    # [win32]
+  - url: https://chromedriver.storage.googleapis.com/{{ chromium_version }}/chromedriver_mac64.zip    # [osx]
+  - url: https://chromedriver.storage.googleapis.com/{{ chromium_version }}/chromedriver_linux64.zip  # [linux64]
+    sha256: {{ chromium_win32_sha256 }}  # [win32]
+    sha256: {{ chromium_mac64_sha256 }}  # [osx]
+    sha256: {{ chromium_linux64_sha256 }}  # [linux64]
+    folder: chromedriver
 
 build:
   number: 0
 
-requirements:
-  build:
-    - python
-    - pip
-    - setuptools
-    - pandoc
-  run:
-    - python
+outputs:
+  - name: chromedriver-binary
+    version: {{ chromium_version }}
+    script: install-chromedriver-binary.sh
+    # Ah the joy of binaries:
+    build:
+      missing_dso_whitelist:
+        - /usr/lib/libbsm.0.dylib
+        - /usr/lib/libresolv.9.dylib
+        # We use install_name_tool on this one instead:
+        # - /usr/lib/libc++.1.dylib
+    requirements:
+      build:
+        - cctools  # [osx]
+      run:
+        - libcxx >=4.0.1  # [osx]
 
-test:
-  requires:
-    - setuptools
-  imports:
-    - chromedriver_binary
-  commands:
-    - chromedriver-path
+  - name: python-chromedriver-binary
+    version: {{ version }}
+    script: install-python-chromedriver-binary.sh
+    build:
+      activate_in_script: True
+    requirements:
+      host:
+        - python
+        - pip
+        - setuptools
+        - pandoc
+        - {{ pin_subpackage('chromedriver-binary', exact=True) }}
+      run:
+        - python
+        - {{ pin_subpackage('chromedriver-binary', exact=True) }}
+    about:
+      home: https://sites.google.com/a/chromium.org/chromedriver/
+      license: 3-Clause BSD
+      license_family: BSD
+      license_file: LICENSE
+      summary: WebDriver for Chrome (binary)
+      description: |
+        WebDriver is an open source tool for automated testing of webapps
+        across many browsers. It provides capabilities for navigating to web
+        pages, user input, JavaScript execution, and more.  ChromeDriver
+        is a standalone server which implements WebDriver's wire protocol
+        for Chromium.
 
-about:
-  home: https://github.com/danielkaiser/python-chromedriver-binary
-  license: MIT
-  license_family: MIT
-  license_file: LICENSE
-  summary: 'Downloads and installs the chromedriver binary version'
-  description: |
-    Downloads and installs the chromedriver binary for automated
-    testing of webapps. The installer supports Linux, MacOS and Windows 
-    operating systems.
+    test:
+      requires:
+        - setuptools
+      imports:
+        - chromedriver_binary
+      commands:
+        - chromedriver-path
+      about:
+        home: https://github.com/danielkaiser/python-chromedriver-binary
+        license: MIT
+        license_family: MIT
+        license_file: LICENSE
+        summary: 'Downloads and installs the chromedriver binary version'
+        description: |
+          Downloads and installs the chromedriver binary for automated
+          testing of webapps. The installer supports Linux, MacOS and Windows
+          operating systems.
+
+
 
 extra:
   recipe-maintainers:
