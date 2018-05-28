@@ -29,9 +29,12 @@ build:
 outputs:
   - name: chromedriver-binary
     version: {{ chromium_version }}
-    script: install-chromedriver-binary.sh
+    script: install-chromedriver-binary.sh   # [win]
+    script: install-chromedriver-binary.bat  # [win]
+    activate_in_script: True
     # Ah the joy of binaries:
     build:
+      activate_in_script: True
       missing_dso_whitelist:
         - /usr/lib/libbsm.0.dylib     # [osx]
         - /usr/lib/libresolv.9.dylib  # [osx]
@@ -58,7 +61,8 @@ outputs:
 
   - name: python-chromedriver-binary
     version: {{ version }}
-    script: install-python-chromedriver-binary.sh
+    script: install-python-chromedriver-binary.sh   # [not win]
+    script: install-python-chromedriver-binary.bat  # [win]
     build:
       activate_in_script: True
     requirements:
