@@ -8,6 +8,8 @@
 ::   mklink chromedriver.exe chromedriver-binary.exe
 ::  dir /s
 :: popd
-python -m pip install --no-deps --ignore-installed --verbose --no-build-isolation .
+:: Embeds _h_env into the Windows launcher 'Scripts'.
+:: python -m pip install --no-deps --ignore-installed --verbose --no-build-isolation .
+python setup.py install --single-version-externally-managed --record=record.txt
 dir %SP_DIR%\chromedriver_binary\chromedriver.exe
 del %SP_DIR%\chromedriver_binary\chromedriver.exe

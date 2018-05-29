@@ -29,7 +29,7 @@ build:
 outputs:
   - name: chromedriver-binary
     version: {{ chromium_version }}
-    script: install-chromedriver-binary.sh   # [win]
+    script: install-chromedriver-binary.sh   # [not win]
     script: install-chromedriver-binary.bat  # [win]
     activate_in_script: True
     # Ah the joy of binaries:
@@ -42,17 +42,17 @@ outputs:
         # - /usr/lib/libc++.1.dylib   # [osx]
         # Could probably use cdt packages here which would allow more options latre
         # (o.e. recommendations for the things to install w/ system package manager).
-        - libglib-2.0.so.0            # [linux]
-        - libgcc_s.so.1               # [linux]
-        - libnspr4.so                 # [linux]
-        - libnss3.so                  # [linux]
-        - libpthread.so.0             # [linux]
-        - libdl.so.2                  # [linux]
-        - librt.so.1                  # [linux]
-        - libnssutil3.so              # [linux]
-        - libc.so.6                   # [linux]
-        - libm.so.6                   # [linux]
-        - libX11.so.6                 # [linux]
+        - '**/libglib-2.0.so.0'       # [linux]
+        - '**/libgcc_s.so.1'          # [linux]
+        - '**/libnspr4.so'            # [linux]
+        - '**/libnss3.so'             # [linux]
+        - '**/libpthread.so.0'        # [linux]
+        - '**/libdl.so.2'             # [linux]
+        - '**/librt.so.1'             # [linux]
+        - '**/libnssutil3.so'         # [linux]
+        - '**/libc.so.6'              # [linux]
+        - '**/libm.so.6'              # [linux]
+        - '**/libX11.so.6'            # [linux]
     requirements:
       build:
         - cctools                     # [osx]
@@ -107,8 +107,8 @@ outputs:
           operating systems.
 
 
-
 extra:
   recipe-maintainers:
     - igortg
+    - mingwandroid
     - williamjamir
