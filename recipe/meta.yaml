@@ -1,7 +1,7 @@
 {% set name = "python-chromedriver-binary" %}
-{% set version = "2.38.0" %}
+{% set version = "90.0.4430.24.0" %}
 {% set chromium_version = "2.38" %}
-{% set sha256 = "1fdfbabd01ebbb4089c4b691904191cdce0415b858f509e255fb39a7ed24b42d" %}
+{% set sha256 = "75f235bf1375240ab6f8f1fb8f12e8026ab606b8753692e6cf98ac10cdfd8787" %}
 {% set chromium_win32_sha256 = "a8fa028acebef7b931ef9cb093f02865f9f7495e49351f556e919f7be77f072e" %}    # [win]
 {% set chromium_mac64_sha256 = "6da3e8e3604d332b73f961495cb6d01d79d995b456778a3bda87df236c138462" %}    # [osx]
 {% set chromium_linux64_sha256 = "519e8f69824ab63d3f223edd19f92128007f78bfb51f878ca2a2d70c6a0f294e" %}  # [linux64]
